@@ -5,33 +5,15 @@ namespace Chapter1
 {
     public static class Program
     {
-        [ThreadStatic]
-        private static int field;
-
-        public static int Field { get => field; set => field = value; }
 
         public static void Main()
         {
-
-            new Thread(() =>
+            ThreadPool.QueueUserWorkItem((s) =>
             {
-                for (int x = 0; x < 10; x++)
-                {
-                    Field++;
-                    Console.WriteLine("Thead A: {0}", Field);
-                }
-            }).Start();
+                Console.WriteLine("Working on a thread from threadpool");
+            });
 
-            new Thread(() =>
-            {
-                for (int x = 0; x < 10; x++)
-                {
-                    Field++;
-                    Console.WriteLine("Thread B: {0}", Field);
-                }
-            }).Start();
-
-            Console.ReadKey();
+            Console.ReadLine();
         }
     }
 }

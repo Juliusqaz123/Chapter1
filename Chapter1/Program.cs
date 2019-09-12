@@ -5,36 +5,33 @@ namespace Chapter1
 {
     public static class Program
     {
+        [ThreadStatic]
+        private static int field;
 
-        public static void ThreadMethod(object o)
-        {
-            for (int i = 0; i < (int)o; i++)
-            {
-                Console.WriteLine("ThreadProc: {0}", i);
-                Thread.Sleep(0);
-            }
-        }
+        public static int Field { get => field; set => field = value; }
 
         public static void Main()
         {
-            bool stopped = false;
-            Thread t = new Thread(new ThreadStart(() =>
+
+            new Thread(() =>
             {
-                while (!stopped)
+                for (int x = 0; x < 10; x++)
                 {
-                    Console.WriteLine("Running...");
-                    Thread.Sleep(1000);
+                    Field++;
+                    Console.WriteLine("Thead A: {0}", Field);
                 }
-            }));
+            }).Start();
 
-            t.Start();
-            Console.WriteLine("Press any key to exit");
+            new Thread(() =>
+            {
+                for (int x = 0; x < 10; x++)
+                {
+                    Field++;
+                    Console.WriteLine("Thread B: {0}", Field);
+                }
+            }).Start();
+
             Console.ReadKey();
-
-            stopped = true;
-            t.Join();
-
-
         }
     }
 }

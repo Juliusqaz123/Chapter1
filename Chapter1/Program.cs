@@ -9,24 +9,18 @@ namespace Chapter1
 
         public static void Main()
         {
-            BlockingCollection<string> col = new BlockingCollection<string>();
-            Task read = Task.Run(() =>
-            {
-                foreach (string v in col.GetConsumingEnumerable())
-                    Console.WriteLine(v);
-            });
+            ConcurrentBag<int> bag = new ConcurrentBag<int>();
 
-            Task write = Task.Run(() =>
-            {
-                while (true)
-                {
-                    string s = Console.ReadLine();
-                    if (string.IsNullOrWhiteSpace(s)) break;
-                    col.Add(s);
-                }
-            });
+            bag.Add(42);
+            bag.Add(21);
 
-            write.Wait();
+            int result;
+            if (bag.TryTake(out result))
+                Console.WriteLine(result);
+
+            if (bag.TryPeek(out result))
+                Console.WriteLine("There is a next item: {0}", result);
+
         }
 
     }

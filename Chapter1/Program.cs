@@ -10,12 +10,10 @@ namespace Chapter1
         public static void Main()
         {
             BlockingCollection<string> col = new BlockingCollection<string>();
-            agTask.Run(() =>
+            Task read = Task.Run(() =>
             {
-                while (true)
-                {
-                    Console.WriteLine(col.Take());
-                }
+                foreach (string v in col.GetConsumingEnumerable())
+                    Console.WriteLine(v);
             });
 
             Task write = Task.Run(() =>

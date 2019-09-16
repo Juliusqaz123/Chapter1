@@ -1,31 +1,26 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Chapter1
 {
-    public static class Program
+    public class Program
     {
 
-        public static void Main()
+        static void Main()
         {
-            var dict = new ConcurrentDictionary<string, int>();
-            if (dict.TryAdd("k1", 42))
+            int n = 0;
+
+            var up = Task.Run(() =>
             {
-                Console.WriteLine("Added");
-            }
+                for (int i = 0; i < 1000000; i++)
+                    n++;
+            });
 
-            if (dict.TryUpdate("k1", 21, 42))
-            {
-                Console.WriteLine("42 updated to 21");
-            }
+            for (int i = 0; i < 1000000; i++)
+                n--;
 
-            dict["k1"] = 42; // Overwrite unconditionally
-
-            int r1 = dict.AddOrUpdate("k1", 3, (s, i) => i * 2);
-            int r2 = dict.GetOrAdd("k2", 3);
+            up.Wait();
+            Console.WriteLine(n);
         }
-
     }
 }

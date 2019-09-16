@@ -8,15 +8,11 @@ namespace Chapter1
 
         public static void Main()
         {
-            Task t = Task.Run(() =>
+            Task<int> t = Task.Run(() =>
             {
-                for (int x = 0; x < 100; x++)
-                {
-                    Console.Write("*");
-                }
+                return 42;
             });
-
-            t.Wait();
+            Console.WriteLine(t.Result); // Displays 42
         }
     }
 }

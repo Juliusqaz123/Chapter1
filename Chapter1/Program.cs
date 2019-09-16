@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
-
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace Chapter1
 {
@@ -9,29 +9,27 @@ namespace Chapter1
 
         public static void Main()
         {
-            var numbers = Enumerable.Range(0, 20);
-
-            try
+            BlockingCollection<string> col = new BlockingCollection<string>();
+            agTask.Run(() =>
             {
-                var parallelResult = numbers.AsParallel()
-                    .Where(i => IsEven(i));
+                while (true)
+                {
+                    Console.WriteLine(col.Take());
+                }
+            });
 
-                parallelResult.ForAll(e => Console.WriteLine(e));
-            }
-            catch (AggregateException e)
+            Task write = Task.Run(() =>
             {
-                Console.WriteLine("There were {0} exceptions",
-                    e.InnerExceptions.Count);
-            }
+                while (true)
+                {
+                    string s = Console.ReadLine();
+                    if (string.IsNullOrWhiteSpace(s)) break;
+                    col.Add(s);
+                }
+            });
 
-            Console.ReadLine();
+            write.Wait();
         }
 
-        public static bool IsEven(int i)
-        {
-            if (i % 10 == 0) throw new ArgumentException("i");
-
-            return i % 2 == 0;
-        }
     }
 }

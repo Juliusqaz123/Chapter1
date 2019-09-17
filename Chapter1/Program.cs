@@ -36,11 +36,29 @@ namespace Chapter1
 
     public class Pub
     {
-        public event EventHandler<MyEventArgs> OnChange = delegate { };
+
+        private event EventHandler<MyEventArgs> onChange = delegate { };
+        public event EventHandler<MyEventArgs> OnChange
+        {
+            add
+            {
+                lock (onChange)
+                {
+                    onChange += value;
+                }
+            }
+            remove
+            {
+                lock (onChange)
+                {
+                    onChange -= value;
+                }
+            }
+        }
 
         public void Raise()
         {
-            OnChange(this, new MyEventArgs(42));
+            onChange(this, new MyEventArgs(42));
         }
     }
 

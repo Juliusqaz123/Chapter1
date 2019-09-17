@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,7 +31,14 @@ namespace Chapter1
             p.OnChange += (sender, e)
                 => Console.WriteLine("Subscriber 3 called");
 
-            p.Raise();
+            try
+            {
+                p.Raise();
+            }
+            catch (AggregateException ex)
+            {
+                Console.WriteLine(ex.InnerExceptions.Count);
+            }
         }
     }
 
@@ -48,7 +57,25 @@ namespace Chapter1
         public event EventHandler OnChange = delegate { };
         public void Raise()
         {
-            OnChange(this, EventArgs.Empty);
+            var exceptions = new List<Exception>();
+
+            foreach (Delegate handler in OnChange.GetInvocationList())
+            {
+                try
+                {
+                    handler.DynamicInvoke(this, EventArgs.Empty);
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Add(ex);
+                }
+            }
+
+            if (exceptions.Any())
+            {
+                throw new AggregateException(exceptions);
+            }
+
         }
     }
 

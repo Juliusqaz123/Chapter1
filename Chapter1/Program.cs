@@ -18,7 +18,16 @@ namespace Chapter1
             Pub p = new Pub();
 
             p.OnChange += (sender, e)
-                => Console.WriteLine("Event raised: {0}", e.Value);
+                => Console.WriteLine("Subscriber 1 called");
+
+            p.OnChange += (sender, e)
+                =>
+            {
+                throw new Exception();
+            };
+
+            p.OnChange += (sender, e)
+                => Console.WriteLine("Subscriber 3 called");
 
             p.Raise();
         }
@@ -36,29 +45,10 @@ namespace Chapter1
 
     public class Pub
     {
-
-        private event EventHandler<MyEventArgs> onChange = delegate { };
-        public event EventHandler<MyEventArgs> OnChange
-        {
-            add
-            {
-                lock (onChange)
-                {
-                    onChange += value;
-                }
-            }
-            remove
-            {
-                lock (onChange)
-                {
-                    onChange -= value;
-                }
-            }
-        }
-
+        public event EventHandler OnChange = delegate { };
         public void Raise()
         {
-            onChange(this, new MyEventArgs(42));
+            OnChange(this, EventArgs.Empty);
         }
     }
 

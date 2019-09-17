@@ -4,29 +4,47 @@ using System.Threading.Tasks;
 
 namespace Chapter1
 {
-    public static class Program
+     static class Program
     {
 
         static void Main()
         {
-            CancellationTokenSource cancellationTokenSource =
-                new CancellationTokenSource();
-            CancellationToken token = cancellationTokenSource.Token;
-
-            Task task = Task.Run(() =>
-            {
-                while (!token.IsCancellationRequested)
-                {
-                    Console.Write("*");
-                    Thread.Sleep(1000);
-                }
-            }, token).ContinueWith((t) =>
-            {
-                t.Exception.Handle((e) => true);
-                Console.WriteLine("You have canceled the task");
-            }, TaskContinuationOptions.OnlyOnCanceled);
-
+            CreateAndRaise();
             Console.ReadLine();
         }
+
+        public static void CreateAndRaise()
+        {
+            Pub p = new Pub();
+
+            p.OnChange += (sender, e)
+                => Console.WriteLine("Event raised: {0}", e.Value);
+
+            p.Raise();
+        }
     }
+
+    public class MyEventArgs : EventArgs
+    {
+        public MyEventArgs(int value)
+        {
+            Value = value;
+        }
+
+        public int Value { get; set; }
+    }
+
+    public class Pub
+    {
+        public event EventHandler<MyEventArgs> OnChange = delegate { };
+
+        public void Raise()
+        {
+            OnChange(this, new MyEventArgs(42));
+        }
+    }
+
+    
+
+
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Chapter1
@@ -10,23 +11,17 @@ namespace Chapter1
         {
             int n = 0;
 
-            object _lock = new object();
-
             var up = Task.Run(() =>
             {
-
                 for (int i = 0; i < 1000000; i++)
-                    lock (_lock)
-                        n++;
+                    Interlocked.Increment(ref n);
             });
 
             for (int i = 0; i < 1000000; i++)
-                lock (_lock)
-                    n--;
+                Interlocked.Decrement(ref n);
 
             up.Wait();
             Console.WriteLine(n);
-            Console.ReadLine();
         }
     }
 }

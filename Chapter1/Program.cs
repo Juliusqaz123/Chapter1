@@ -20,22 +20,12 @@ namespace Chapter1
                     Console.Write("*");
                     Thread.Sleep(1000);
                 }
-
-                token.ThrowIfCancellationRequested();
-            }, token);
-
-            try
+            }, token).ContinueWith((t) =>
             {
-                Console.WriteLine("Press enter to stop the task");
-                Console.ReadLine();
+                t.Exception.Handle((e) => true);
+                Console.WriteLine("You have canceled the task");
+            }, TaskContinuationOptions.OnlyOnCanceled);
 
-                cancellationTokenSource.Cancel();
-                task.Wait();
-            } catch (AggregateException e)
-            {
-                Console.WriteLine(e.InnerExceptions[0].Message);
-            }
-            Console.WriteLine("Press enter to end the application");
             Console.ReadLine();
         }
     }

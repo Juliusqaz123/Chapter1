@@ -1,31 +1,21 @@
 ﻿using System;
+using System.IO;
+
 namespace ExceptionHandling
 {
     public static class Program
     {
         public static void Main(string[] args)
         {
-            try
-            {
-                int i = ReadAndParse();
-                Console.WriteLine("ParsedL {0}", i);
-            }
-            catch (FormatException e)
-            {
-                Console.WriteLine("Message: {0}", e.Message);
-                Console.WriteLine("StackTrace: {0}", e.StackTrace);
-                Console.WriteLine("HelpLink: {0}", e.HelpLink);
-                Console.WriteLine("InnerException: {0}", e.InnerException);
-                Console.WriteLine("TargetSite: {0}", e.TargetSite);
-                Console.WriteLine("Source: {0}", e.Source);
-            }
+            OpenAndParse("");
         }
 
-        private static int ReadAndParse()
+        public static string OpenAndParse(string fileName)
         {
-            string s = Console.ReadLine();
-            int i = int.Parse(s);
-            return i;
+            if (string.IsNullOrWhiteSpace(fileName))
+                throw new ArgumentNullException("fileName", "FileName is required");
+
+            return File.ReadAllText(fileName);
         }
     }
 }
